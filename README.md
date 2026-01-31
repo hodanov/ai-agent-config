@@ -1,20 +1,20 @@
 [![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![日本語](https://img.shields.io/badge/lang-日本語-orange)](README.ja.md)
 
-# my-codex-cli-config
+# ai-agent-config
 
-This repository manages my AGENTS.md file for Codex CLI.
+This repository manages my AGENTS.md file for Codex CLI, and can also generate a CLAUDE.md symlink for Claude Code.
 
 ## Structure
 
-- agents.xml: The actual content backing `AGENTS.md`. Create a symlink from `~/.codex/AGENTS.md` to this file.
-- Makefile: Provides commands to create and remove the symlink.
+- agents.xml: The actual content backing `AGENTS.md` and `CLAUDE.md`. Create a symlink from `~/.codex/AGENTS.md` or `~/.claude/CLAUDE.md` to this file.
+- Makefile: Provides commands to create and remove the symlink(s).
 
 ## Usage
 
 Create a symlink from `~/.codex/AGENTS.md` to `agents.xml`:
 
 ```sh
-cd my-codex-cli-config
+cd ai-agent-config
 make codex-link
 ```
 
@@ -22,6 +22,19 @@ To remove the symlink:
 
 ```sh
 make codex-unlink
+```
+
+Create a symlink from `~/.claude/CLAUDE.md` to `agents.xml`:
+
+```sh
+cd ai-agent-config
+make claude-link
+```
+
+To remove the symlink:
+
+```sh
+make claude-unlink
 ```
 
 ## Why define AGENTS.md in XML

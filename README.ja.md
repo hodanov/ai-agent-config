@@ -1,12 +1,12 @@
 [![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![日本語](https://img.shields.io/badge/lang-日本語-orange)](README.ja.md)
 
-# my-codex-cli-config
+# ai-agent-config
 
-これはCodex CLIのAGENTS.mdファイルを管理するリポジトリ。
+これはCodex CLIのAGENTS.mdファイルを管理するリポジトリで、Claude Code用のCLAUDE.mdにも対応。
 
 ## 構成
 
-- agents.xml: AGENTS.mdファイルの実態。`~/.codex/AGENTS.md`のシンボリックリンク。
+- agents.xml: AGENTS.mdとCLAUDE.mdの実態。`~/.codex/AGENTS.md`または`~/.claude/CLAUDE.md`のシンボリックリンク。
 - Makefile: シンボリックリンクの作成と削除を簡単に実行するためのコマンドを実装。
 
 ## 使い方
@@ -14,7 +14,7 @@
 `~/.codex/AGENTS.md`のシンボリックリンクをagents.xmlに貼る。
 
 ```sh
-cd my-codex-cli-config
+cd ai-agent-config
 make codex-link
 ```
 
@@ -22,6 +22,19 @@ make codex-link
 
 ```sh
 make codex-unlink
+```
+
+`~/.claude/CLAUDE.md`のシンボリックリンクをagents.xmlに貼る。
+
+```sh
+cd ai-agent-config
+make claude-link
+```
+
+シンボリックリンクを解除したい場合は下記のコマンドを実行する。
+
+```sh
+make claude-unlink
 ```
 
 ## AGENTS.mdの中身をxmlとして定義する理由
