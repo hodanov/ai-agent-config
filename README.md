@@ -8,6 +8,7 @@ This repository manages my AGENTS.md file for Codex CLI, and can also generate a
 
 - agents.xml: The actual content backing `AGENTS.md` and `CLAUDE.md`. Create a symlink from `~/.codex/AGENTS.md` or `~/.claude/CLAUDE.md` to this file.
 - Makefile: Provides commands to create and remove the symlink(s).
+- skills/: Shared Skills for Codex CLI, Claude Code, and Cursor.
 
 ## Usage
 
@@ -37,7 +38,21 @@ To remove the symlink:
 make claude-unlink
 ```
 
-Install skills from `.codex/skills` into `~/.codex/skills`:
+Copy skills into user-level directories for Codex/Claude/Cursor:
+
+```sh
+make skills-copy
+```
+
+Per-tool options:
+
+```sh
+make codex-skills-copy
+make claude-skills-copy
+make cursor-skills-copy
+```
+
+Legacy alias (copy for Codex only):
 
 ```sh
 make codex-skills-install

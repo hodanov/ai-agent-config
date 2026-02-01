@@ -8,6 +8,7 @@
 
 - agents.xml: AGENTS.mdとCLAUDE.mdの実態。`~/.codex/AGENTS.md`または`~/.claude/CLAUDE.md`のシンボリックリンク。
 - Makefile: シンボリックリンクの作成と削除を簡単に実行するためのコマンドを実装。
+- skills/: Codex CLI、Claude Code、Cursorで共通利用するSkills。
 
 ## 使い方
 
@@ -37,7 +38,21 @@ make claude-link
 make claude-unlink
 ```
 
-`.codex/skills` を `~/.codex/skills` にインストールする。
+コピーでユーザーレベルに配置する。
+
+```sh
+make skills-copy
+```
+
+ツール別:
+
+```sh
+make codex-skills-copy
+make claude-skills-copy
+make cursor-skills-copy
+```
+
+互換用（Codexのみコピー）:
 
 ```sh
 make codex-skills-install
