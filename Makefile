@@ -30,3 +30,54 @@ claude-unlink:
 	else \
 		echo "$(AGENTS_DEST_FOR_CLAUDE) is not a symlink or does not exist."; \
 	fi
+
+SKILLS_SRC := $(PWD)/.codex/skills
+SKILLS_DEST := $(HOME)/.codex/skills
+
+.PHONY: codex-skills-install
+codex-skills-install:
+	@set -eu; \
+	if [ ! -d "$(SKILLS_SRC)" ]; then \
+		echo "Source skills directory not found: $(SKILLS_SRC)"; \
+		exit 1; \
+	fi; \
+	mkdir -p "$(SKILLS_DEST)"; \
+	tmp=$$(mktemp); \
+	trap 'rm -f "$$tmp"' EXIT; \
+	find "$(SKILLS_SRC)" -mindepth 1 -maxdepth 1 -type d -print0 > "$$tmp"; \
+	if [ ! -s "$$tmp" ]; then \
+		echo "No skills found in $(SKILLS_SRC)"; \
+		exit 0; \
+	fi; \
+	dup_found=0; \
+	dup_list=""; \
+	while IFS= read -r -d '' dir; do \
+		base=$$(basename "$$dir"); \
+		if [ -e "$(SKILLS_DEST)/$$base" ]; then \
+			dup_found=1; \
+			dup_list="$$dup_list$$base\n"; \
+		fi; \
+	done < "$$tmp"; \
+	overwrite=0; \
+	if [ "$$dup_found" -eq 1 ]; then \
+		echo "The following skills already exist in $(SKILLS_DEST):"; \
+		printf "%b" "$$dup_list"; \
+		printf "Overwrite existing skills? [y/N] "; \
+		read -r ans; \
+		case "$$ans" in \
+			y|Y) overwrite=1 ;; \
+			*) overwrite=0 ;; \
+		esac; \
+	fi; \
+	while IFS= read -r -d '' dir; do \
+		base=$$(basename "$$dir"); \
+		dest="$(SKILLS_DEST)/$$base"; \
+		if [ -e "$$dest" ] && [ "$$overwrite" -ne 1 ]; then \
+			echo "Skip $$base (already exists)"; \
+			continue; \
+		fi; \
+		rm -rf "$$dest"; \
+		cp -R "$$dir" "$$dest"; \
+		echo "Installed $$base"; \
+	done < "$$tmp"; \
+	echo "Done."
