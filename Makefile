@@ -1,5 +1,11 @@
 AGENTS_SRC := $(PWD)/agents.xml
 AGENTS_DEST := $(HOME)/.codex/AGENTS.md
+AGENTS_DEST_FOR_CLAUDE := $(HOME)/.claude/CLAUDE.md
+
+SKILLS_SRC := $(PWD)/skills
+CODEX_SKILLS_DEST := $(HOME)/.codex/skills
+CLAUDE_SKILLS_DEST := $(HOME)/.claude/skills
+CURSOR_SKILLS_DEST := $(HOME)/.cursor/skills
 
 .PHONY: codex-link
 codex-link:
@@ -15,8 +21,6 @@ codex-unlink:
 		echo "$(AGENTS_DEST) is not a symlink or does not exist."; \
 	fi
 
-AGENTS_DEST_FOR_CLAUDE := $(HOME)/.claude/CLAUDE.md
-
 .PHONY: claude-link
 claude-link:
 	@ln -sf "$(AGENTS_SRC)" "$(AGENTS_DEST_FOR_CLAUDE)"
@@ -31,36 +35,38 @@ claude-unlink:
 		echo "$(AGENTS_DEST_FOR_CLAUDE) is not a symlink or does not exist."; \
 	fi
 
-SKILLS_SRC := $(PWD)/.codex/skills
-SKILLS_DEST := $(HOME)/.codex/skills
-
-.PHONY: codex-skills-install
-codex-skills-install:
+define copy_skills
 	@set -eu; \
-	if [ ! -d "$(SKILLS_SRC)" ]; then \
-		echo "Source skills directory not found: $(SKILLS_SRC)"; \
+	src="$(SKILLS_SRC)"; \
+	dest="$(1)"; \
+	if [ ! -d "$$src" ]; then \
+		echo "Source skills directory not found: $$src"; \
 		exit 1; \
 	fi; \
-	mkdir -p "$(SKILLS_DEST)"; \
+	if [ -L "$$dest" ]; then \
+		echo "Destination is a symlink. Remove it before copying: $$dest"; \
+		exit 1; \
+	fi; \
+	mkdir -p "$$dest"; \
 	tmp=$$(mktemp); \
 	trap 'rm -f "$$tmp"' EXIT; \
-	find "$(SKILLS_SRC)" -mindepth 1 -maxdepth 1 -type d -print0 > "$$tmp"; \
+	find "$$src" -mindepth 1 -maxdepth 1 -type d -print0 > "$$tmp"; \
 	if [ ! -s "$$tmp" ]; then \
-		echo "No skills found in $(SKILLS_SRC)"; \
+		echo "No skills found in $$src"; \
 		exit 0; \
 	fi; \
 	dup_found=0; \
 	dup_list=""; \
 	while IFS= read -r -d '' dir; do \
 		base=$$(basename "$$dir"); \
-		if [ -e "$(SKILLS_DEST)/$$base" ]; then \
+		if [ -e "$$dest/$$base" ]; then \
 			dup_found=1; \
 			dup_list="$$dup_list$$base\n"; \
 		fi; \
 	done < "$$tmp"; \
 	overwrite=0; \
 	if [ "$$dup_found" -eq 1 ]; then \
-		echo "The following skills already exist in $(SKILLS_DEST):"; \
+		echo "The following skills already exist in $$dest:"; \
 		printf "%b" "$$dup_list"; \
 		printf "Overwrite existing skills? [y/N] "; \
 		read -r ans; \
@@ -71,13 +77,32 @@ codex-skills-install:
 	fi; \
 	while IFS= read -r -d '' dir; do \
 		base=$$(basename "$$dir"); \
-		dest="$(SKILLS_DEST)/$$base"; \
-		if [ -e "$$dest" ] && [ "$$overwrite" -ne 1 ]; then \
+		dest_dir="$$dest/$$base"; \
+		if [ -e "$$dest_dir" ] && [ "$$overwrite" -ne 1 ]; then \
 			echo "Skip $$base (already exists)"; \
 			continue; \
 		fi; \
-		rm -rf "$$dest"; \
-		cp -R "$$dir" "$$dest"; \
+		rm -rf "$$dest_dir"; \
+		cp -R "$$dir" "$$dest_dir"; \
 		echo "Installed $$base"; \
 	done < "$$tmp"; \
 	echo "Done."
+endef
+
+.PHONY: skills-copy
+skills-copy: codex-skills-copy claude-skills-copy cursor-skills-copy
+
+.PHONY: codex-skills-copy
+codex-skills-copy:
+	$(call copy_skills,$(CODEX_SKILLS_DEST))
+
+.PHONY: codex-skills-install
+codex-skills-install: codex-skills-copy
+
+.PHONY: claude-skills-copy
+claude-skills-copy:
+	$(call copy_skills,$(CLAUDE_SKILLS_DEST))
+
+.PHONY: cursor-skills-copy
+cursor-skills-copy:
+	$(call copy_skills,$(CURSOR_SKILLS_DEST))
