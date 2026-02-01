@@ -37,6 +37,12 @@ To remove the symlink:
 make claude-unlink
 ```
 
+Install skills from `.codex/skills` into `~/.codex/skills`:
+
+```sh
+make codex-skills-install
+```
+
 ## Why define AGENTS.md in XML
 
 According to the GPT-5 for Coding Cheatsheet (PDF), using XML-like tags to structure instructions is recommended. The cheatsheet clearly states “XML-like syntax to help structure instructions” and provides concrete examples.

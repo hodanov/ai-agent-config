@@ -37,6 +37,12 @@ make claude-link
 make claude-unlink
 ```
 
+`.codex/skills` を `~/.codex/skills` にインストールする。
+
+```sh
+make codex-skills-install
+```
+
 ## AGENTS.mdの中身をxmlとして定義する理由
 
 [GPT-5 for Coding Cheatsheet(PDF)](https://cdn.openai.com/API/docs/gpt-5-for-coding-cheatsheet.pdf)によると、XMLライクなタグでセクションを区切る書き方が推奨されているから。
