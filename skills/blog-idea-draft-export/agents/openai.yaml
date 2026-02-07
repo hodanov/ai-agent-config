@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Idea Draft Export"
+  short_description: "Draft blog ideas and export Markdown files to hodalog docs/idea"
+  default_prompt: "Summarize recent work into a blog draft and export it to ~/workspace/hodalog-hugo/docs/idea/YYYY-MM-DD_<slug>.md."
